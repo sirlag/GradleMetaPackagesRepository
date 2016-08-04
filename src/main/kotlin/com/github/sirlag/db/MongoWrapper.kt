@@ -1,5 +1,7 @@
 package com.github.sirlag.db
 
+import com.github.sirlag.DependencyVersion
+import com.github.sirlag.gson
 import com.mongodb.MongoClient
 import org.bson.Document
 
@@ -26,6 +28,15 @@ fun addDependency(identifier: String, version: Double, dependencies: List<String
     db.getCollection("dependencies").insertOne(doc)
 }
 
+fun addVersionToDependency(identifier: String, version: DependencyVersion){
+    val doc = getDependency(identifier)!!
+    val size = doc["versions", List::class.java].filter { (it as Document).getDouble("version") == version.version }.size
+    if (size > 0)
+        throw VersionAlreadyExistsExceptions("Unable to add version $version, it already exists")
+    val versions = doc["versions", List::class.java] + Document.parse(gson.toJson(version))
+    db.getCollection("dependencies").updateOne(doc, Document("\$set", Document("versions",versions)))
+}
+
 fun getDependencyVersion(identifier: String, version: Double) : Document{
      val doc = db.getCollection("dependencies")
                  .find(Document("identifier", identifier)
@@ -44,3 +55,4 @@ fun getLatestDependencyVersion(identifier: String): Document{
 
 class DependencyAlreadyExistsException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)
 class DependencyNotFoundException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)
+class VersionAlreadyExistsExceptions(msg:String? = null, cause: Throwable? = null) : Exception(msg, cause)
