@@ -1,5 +1,6 @@
 package com.github.sirlag.db
 
+import com.github.sirlag.Dependency
 import com.github.sirlag.DependencyVersion
 import com.github.sirlag.gson
 import com.mongodb.MongoClient
@@ -13,17 +14,19 @@ fun getDependency(identifier:String) : Document? {
     return db.getCollection("dependencies").find(Document("identifier", identifier)).firstOrNull()
 }
 
-fun addDependency(identifier: String, version: Double, dependencies: List<String>, repositories: List<String>){
+fun addDependency(dependency: Dependency){
 
-    if (getDependency(identifier) != null)
-        throw DependencyAlreadyExistsException("The dependency $identifier already exists. You are probably looking to" +
-                "update $identifier instead")
+    if (getDependency(dependency.identifier) != null)
+        throw DependencyAlreadyExistsException("The dependency ${dependency.identifier} already exists. You are probably looking to" +
+                "update ${dependency.identifier} instead")
+
     val doc = Document()
-        .append("identifier", identifier)
-        .append("versions", listOf(Document()
-            .append("version", version)
-            .append("dependencies", dependencies)
-            .append("repositories", repositories)))
+        .append("identifier", dependency.identifier)
+        .append("versions", dependency.versions.map {
+            Document("version", it.version)
+                .append("dependencies", it.dependencies.toList())
+                .append("repositories", it.repositories.toList())
+        })
 
     db.getCollection("dependencies").insertOne(doc)
 }

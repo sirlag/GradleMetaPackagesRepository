@@ -11,14 +11,10 @@ val gson = Gson()
 
 fun main(args: Array<String>) {
 
-
-
     get("repo/:identifier") { request, response -> response.redirect("repo/${request.params("identifier")}/latest")}
     get("repo/:identifier/:version") { request, response -> HandleDependencyRequest(request, response) }
 
-    post("repo/:identifier") {request, response ->
-        "Added ${request.params(":identifier")} version"
-    }
+    post("repo/:identifier") {request, response -> HandleNewDependency(request, response)}
     post("repo/:identifier/:version") {request, response -> HandleNewDependencyVersion(request, response)}
 
     after { request, response -> response.header("Content-Encoding", "gzip") }
@@ -49,12 +45,25 @@ fun HandleNewDependencyVersion(request: Request, response: Response): String{
         addVersionToDependency(request.params(":identifier"), version)
         return version.toString()
     } catch (ex: JsonParseException){
-        println("unable to parse ${request.url()}")
         response.status(400)
         return "Malformed JSON Request"
     } catch (ex: VersionAlreadyExistsExceptions){
         response.status(500)
         return "Version already exists in repository"
+    }
+}
+
+fun HandleNewDependency(request: Request, response: Response): String{
+    try {
+        val dependency = gson.fromJson(request.body(), Dependency::class.java)
+        addDependency(dependency)
+        return dependency.toString()
+    } catch (ex: JsonParseException){
+        response.status(400)
+        return "Malformed JSON Request"
+    } catch (ex: DependencyAlreadyExistsException){
+        response.status(500)
+        return "Dependency already exists in repository"
     }
 }
 
