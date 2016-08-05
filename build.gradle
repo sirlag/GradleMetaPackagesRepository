@@ -29,6 +29,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile 'nl.komponents.kovenant:kovenant:3.3.0'
     compile "com.sparkjava:spark-core:2.5"
+    compile "com.sparkjava:spark-template-jade:2.3"
     compile "org.slf4j:slf4j-simple:1.7.21"
     compile 'org.mongodb:mongodb-driver:3.3.0'
     compile 'com.google.code.gson:gson:2.7'

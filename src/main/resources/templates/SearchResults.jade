@@ -1,0 +1,14 @@
+doctype html
+html(lang="en")
+    body
+        |Here is a message
+        div
+            ul#dependencies
+                each metaDependency in dependencies
+                    li: div
+                        #{metaDependency.identifier}
+                        each version in metaDependency.versions
+                            div: span
+                                #{version.version}
+                                each d in version.dependencies
+                                    div #{d.toString()}

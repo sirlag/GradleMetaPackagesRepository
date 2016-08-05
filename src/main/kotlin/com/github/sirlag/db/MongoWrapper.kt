@@ -4,7 +4,10 @@ import com.github.sirlag.Dependency
 import com.github.sirlag.DependencyVersion
 import com.github.sirlag.gson
 import com.mongodb.MongoClient
+import com.mongodb.client.model.Filters.regex
 import org.bson.Document
+import java.time.LocalDateTime
+import java.util.regex.Pattern
 
 //This a local copy of mongodb running in a docker container. Don't worry about this too much for now
 val mongoClient = MongoClient("192.168.99.100")
@@ -27,7 +30,6 @@ fun addDependency(dependency: Dependency){
                 .append("dependencies", it.dependencies.toList())
                 .append("repositories", it.repositories.toList())
         })
-
     db.getCollection("dependencies").insertOne(doc)
 }
 
@@ -54,6 +56,13 @@ fun getLatestDependencyVersion(identifier: String): Document{
     val doc = getDependency(identifier) ?: throw DependencyNotFoundException("Could not locate $identifier:")
     return doc.get("versions", List::class.java)
         .sortedByDescending { (it as Document).getDouble("version") }.firstOrNull() as Document
+}
+
+fun searchForDependencies(identifier: String): List<Dependency>{
+    return db.getCollection("dependencies")
+            .find(regex("identifier", Pattern.compile(Pattern.quote(identifier), Pattern.CASE_INSENSITIVE)))
+            .map { gson.fromJson(it.toJson(), Dependency::class.java) }.toList()
+
 }
 
 class DependencyAlreadyExistsException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)

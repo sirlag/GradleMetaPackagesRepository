@@ -3,14 +3,20 @@ package com.github.sirlag
 import com.github.sirlag.db.*
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
+import spark.ModelAndView
 import spark.Request
 import spark.Response
 import spark.Spark.*
+import spark.template.jade.JadeTemplateEngine
+import java.util.*
 
 val gson = Gson()
 
 fun main(args: Array<String>) {
 
+    get("/search", {request, response -> HandleDependencySearch(request, response)}, JadeTemplateEngine())
+
+    //Repo end points.
     get("repo/:identifier") { request, response -> response.redirect("repo/${request.params("identifier")}/latest")}
     get("repo/:identifier/:version") { request, response -> HandleDependencyRequest(request, response) }
 
@@ -65,6 +71,16 @@ fun HandleNewDependency(request: Request, response: Response): String{
         response.status(500)
         return "Dependency already exists in repository"
     }
+}
+
+fun HandleDependencySearch(request: Request, response: Response): ModelAndView{
+    val model = HashMap<String, Any>()
+    val query = request.queryParams("query")
+    val queryResults = searchForDependencies(query)
+    if (queryResults.size == 1)
+        response.redirect("/package/${queryResults.first().identifier}")
+    model.put("dependencies", queryResults)
+    return ModelAndView(model, "SearchResults.jade")
 }
 
 data class DependencyVersion(val version: Double, val dependencies: Array<String>, val repositories: Array<String>)
