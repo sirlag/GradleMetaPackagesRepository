@@ -12,6 +12,8 @@ import java.util.*
 
 val gson = Gson()
 
+val database: RepositoryDatabase = MongoWrapper("192.168.99.100", "test", gson)
+
 fun main(args: Array<String>) {
 
     get("/search", {request, response -> HandleDependencySearch(request, response)}, JadeTemplateEngine())
@@ -34,9 +36,9 @@ fun HandleDependencyRequest(request: Request, response: Response): String {
 
     try {
         if (version == "latest")
-            responseMessage = getLatestDependencyVersion(identifier).toJson()
+            responseMessage = gson.toJson(database.getLatestDependencyVersion(identifier))
         else
-            responseMessage = getDependencyVersion(identifier, version.toDouble()).toJson()
+            responseMessage = gson.toJson(database.getDependencyVersion(identifier, version.toDouble()))
     } catch (ex: DependencyNotFoundException) {
         //TODO log the exception
         halt(404)
@@ -48,7 +50,7 @@ fun HandleDependencyRequest(request: Request, response: Response): String {
 fun HandleNewDependencyVersion(request: Request, response: Response): String{
     try {
         val version = gson.fromJson(request.body(), DependencyVersion::class.java)
-        addVersionToDependency(request.params(":identifier"), version)
+        database.addVersionToDependency(request.params(":identifier"), version)
         return version.toString()
     } catch (ex: JsonParseException){
         response.status(400)
@@ -62,7 +64,7 @@ fun HandleNewDependencyVersion(request: Request, response: Response): String{
 fun HandleNewDependency(request: Request, response: Response): String{
     try {
         val dependency = gson.fromJson(request.body(), Dependency::class.java)
-        addDependency(dependency)
+        database.addDependency(dependency)
         return dependency.toString()
     } catch (ex: JsonParseException){
         response.status(400)
@@ -76,7 +78,7 @@ fun HandleNewDependency(request: Request, response: Response): String{
 fun HandleDependencySearch(request: Request, response: Response): ModelAndView{
     val model = HashMap<String, Any>()
     val query = request.queryParams("query")
-    val queryResults = searchForDependencies(query)
+    val queryResults = database.searchForDependencies(query)
     if (queryResults.size == 1)
         response.redirect("/package/${queryResults.first().identifier}")
     model.put("dependencies", queryResults)
