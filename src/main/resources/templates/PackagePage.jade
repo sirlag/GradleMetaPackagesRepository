@@ -1,0 +1,20 @@
+extends Layout
+block content
+    div.row
+        div.col.s12.m6
+            div.card.grey.lighten-5
+                div.card-content
+                    span.card-title Add to your project
+                    p
+                        |To add this MetaPackage to your project, copy this code below into the MetaDependencies section of your gradle build file
+                    div.center-align.grey.darken-3.text-darken-4.white-text.tex
+                        pre
+                            h5 #{dependency.identifier}{  version=#{latestVersion.version}  }
+                    div.card-action
+                        a(data-clipboard-text="#{dependency.identifier}{version=#{latestVersion.version}}",
+                        onclick="Materialize.toast('Copied to clipboard')").cpy
+                            |Copy to Clipboard
+block scripts
+    script(type="text/javascript", src="/js/clipboard.min.js")
+    script
+        new Clipboard('.cpy')
