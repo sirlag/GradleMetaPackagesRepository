@@ -2,7 +2,23 @@ extends Layout
 block content
     div.row
         div.col.s12.m6
-            div.card.grey.lighten-5
+            div.card.grey.lighten-4
+                div.card-content
+                    span.card-title #{dependency.identifier}
+                    hr
+                    span.card-title What this package adds
+                    ul.collection
+                        for d in latestVersion.dependencies
+                            li.collection-item
+                                div
+                                    #{d}
+                                    - link = d.split(':')
+                                    - link = link[1]
+                                    a.secondary-content.tooltipped(href="http://search.maven.org/#search|ga|1|#{link}",
+                                    data-tooltip="Search on Maven Central", data-position="right", data-delay="30")
+                                        i.material-icons search
+        div.col.s12.m6
+            div.card.grey.lighten-4
                 div.card-content
                     span.card-title Add to your project
                     p
