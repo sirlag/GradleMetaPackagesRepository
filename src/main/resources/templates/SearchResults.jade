@@ -1,14 +1,10 @@
-doctype html
-html(lang="en")
-    body
-        |Here is a message
-        div
-            ul#dependencies
-                each metaDependency in dependencies
-                    li: div
-                        #{metaDependency.identifier}
+extends Layout.jade
+block content
+    div
+        div.collection
+            each metaDependency in dependencies
+                a.collection-item(href="/package/#{metaDependency.identifier}"): div
+                    #{metaDependency.identifier}
+                    span
                         each version in metaDependency.versions
-                            div: span
-                                #{version.version}
-                                each d in version.dependencies
-                                    div #{d.toString()}
+                            div.chip #{version.version}

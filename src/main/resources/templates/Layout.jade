@@ -1,0 +1,26 @@
+doctype html
+html
+    head
+        block title
+            title GradeMetaPackages Repository
+        link(href="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
+        link(type="text/css", rel="stylesheet", href="css/materialize.min.css",  media="screen,projection")
+        link(type="text/css", rel="Stylesheet", href="css/layout.css")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    body
+        nav
+            div.nav-wrapper
+                ul.right.hide-on-med-and-down
+                    li: a(href="/"): i.material-icons home
+                form(action="/search")
+                    div.input-field
+                        input#search(type="search", required, name="query")
+                        label(for="search")
+                            i.material-icons search
+                        i.material-icons close
+        main
+            div.container
+                block content
+        script(type="text/javascript", src="https://code.jquery.com/jquery-2.1.1.min.js")
+        script(type="text/javascript", src="js/materialize.min.js")
+        block scripts
