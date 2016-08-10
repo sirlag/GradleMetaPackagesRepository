@@ -30,6 +30,18 @@ block content
                         a(data-clipboard-text="#{dependency.identifier}{version=#{latestVersion.version}}",
                         onclick="Materialize.toast('Copied to clipboard')").cpy
                             |Copy to Clipboard
+        unless latestVersion.repositories.size() == 0
+            div.col.s12.m6
+                div.card.grey.lighten-4
+                    div.card-content
+                        span.card-title Added Maven Repositories
+                        p.
+                            Some dependencies in this MetaPackage require maven repositories that are not maven central.
+                            These repositories can be found below
+                        ul.collection
+                            for repo in latestVersion.repositories
+                                li.collection-item
+                                    |#{repo}
 block scripts
     script(type="text/javascript", src="/js/clipboard.min.js")
     script
