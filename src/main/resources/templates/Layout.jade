@@ -12,6 +12,10 @@ html
             div.nav-wrapper
                 ul.right.hide-on-med-and-down
                     li: a(href="/"): i.material-icons home
+                    if isAuthenticated == true
+                        li: a(href="/"): |Hello #{name}
+                    else
+                        li: a(href="/login"): |Login
                 form(action="/search")
                     div.input-field
                         input#search(type="search", required, name="query")

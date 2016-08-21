@@ -1,8 +1,15 @@
 package com.github.sirlag
 
+import com.github.sirlag.Auth.AppConfigFactory
 import com.github.sirlag.db.*
 import com.github.sirlag.Handlers.*
 import com.google.gson.Gson
+import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.ProfileManager
+import org.pac4j.sparkjava.ApplicationLogoutRoute
+import org.pac4j.sparkjava.CallbackRoute
+import org.pac4j.sparkjava.SecurityFilter
+import org.pac4j.sparkjava.SparkWebContext
 import spark.Spark.*
 import spark.template.jade.JadeTemplateEngine
 import spark.debug.DebugScreen.enableDebugScreen
@@ -15,6 +22,18 @@ fun main(args: Array<String>) {
     enableDebugScreen()
 
     staticFiles.location("/public")
+    val config = AppConfigFactory().build()
+
+    val callback = CallbackRoute(config, "/", true, true)
+    get("/callback", callback)
+    post("/callback", callback)
+
+    get("/logout", ApplicationLogoutRoute(config, "/"))
+
+    before("/upload", SecurityFilter(config, "GithubClient"))
+    get("/upload", {request, response -> HandleUpload(request, response)}, JadeTemplateEngine())
+
+    get("/login", {request, response -> HandleLogin(request, response)}, JadeTemplateEngine())
 
     get("/", {request, response -> HandleIndex(request, response)}, JadeTemplateEngine())
     get("search", {request, response -> HandleDependencySearch(request, response)}, JadeTemplateEngine())

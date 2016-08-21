@@ -8,6 +8,9 @@ import com.github.sirlag.db.DependencyNotFoundException
 import com.github.sirlag.db.VersionAlreadyExistsExceptions
 import com.github.sirlag.gson
 import com.google.gson.JsonParseException
+import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.ProfileManager
+import org.pac4j.sparkjava.SparkWebContext
 import spark.ModelAndView
 import spark.Request
 import spark.Response
@@ -86,5 +89,37 @@ fun HandleDependencyPage(request: Request, response: Response): ModelAndView {
 
 fun HandleIndex(request: Request, response: Response): ModelAndView{
     val model = HashMap<String, Any>()
+    val context = SparkWebContext(request, response)
+    val manager = ProfileManager<CommonProfile>(context)
+    model.put("isAuthenticated", manager.isAuthenticated)
+    if(manager.isAuthenticated) {
+        val profile = manager.get(true).get()
+        model.put("name", profile.displayName.split(' ').first())
+    }
     return ModelAndView(model, "Index.jade")
+}
+
+fun HandleUpload(request: Request, response: Response): ModelAndView{
+    val model = HashMap<String, Any>()
+    val context = SparkWebContext(request, response)
+    val manager = ProfileManager<CommonProfile>(context)
+    model.put("isAuthenticated", manager.isAuthenticated)
+    println(manager.isAuthenticated)
+    if(manager.isAuthenticated) {
+        val profile = manager.get(true)
+        model.put("user", profile.get())
+    }
+    return ModelAndView(model, "Upload.jade")
+}
+
+fun HandleLogin(request: Request, response: Response): ModelAndView{
+    val model = HashMap<String, Any>()
+    val context = SparkWebContext(request, response)
+    val manager = ProfileManager<CommonProfile>(context)
+    model.put("isAuthenticated", manager.isAuthenticated)
+    if(manager.isAuthenticated) {
+        val profile = manager.get(true).get()
+        model.put("name", profile.displayName.split(' ').first())
+    }
+    return ModelAndView(model, "Login.jade")
 }
