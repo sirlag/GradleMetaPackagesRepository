@@ -16,7 +16,7 @@ import spark.debug.DebugScreen.enableDebugScreen
 
 val gson = Gson()
 
-val database: RepositoryDatabase = MongoWrapper("192.168.99.100", "test", gson)
+val database: RepositoryDatabase = MongoWrapper("192.168.99.100", "GMD", gson)
 
 fun main(args: Array<String>) {
     enableDebugScreen()
@@ -48,6 +48,7 @@ fun main(args: Array<String>) {
 
     after { request, response -> response.header("Content-Encoding", "gzip") }
 }
+
 
 data class DependencyVersion(val version: Double, val dependencies: Array<String>, val repositories: Array<String>)
 data class Dependency(val identifier: String, val versions: Array<DependencyVersion>)

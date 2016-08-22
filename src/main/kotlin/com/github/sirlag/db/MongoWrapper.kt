@@ -13,11 +13,11 @@ class MongoWrapper(address: String, database: String, private val gson: Gson): R
     private val db: MongoDatabase = MongoClient(address).getDatabase(database)
 
     override fun getDependency(identifier:String) : Dependency? {
-        val dependency = db.getCollection("dependencies").find(Document("identifier", identifier)).first().toJson()
+        val dependency = db.getCollection("dependencies").find(Document("identifier", identifier))?.first()?.toJson()
         return if(dependency != null) gson.fromJson(dependency, Dependency::class.java) else null
     }
 
-    override fun addDependency(dependency: Dependency){
+    override infix fun addDependency(dependency: Dependency){
 
         if (getDependency(dependency.identifier) != null)
             throw DependencyAlreadyExistsException("The dependency ${dependency.identifier} already exists. You are" +
