@@ -1,0 +1,16 @@
+extends Layout.jade
+block content
+    div.center
+        h2 Hello #{user.name}
+        img.circle.responsive-img(src="https://www.gravatar.com/avatar/#{gravatarHash}")
+        p Welcome to the GradleMetaPackages Central repository. In order to continue, you need to choose a Display name.
+        ul
+            li
+                |These names are unique, and how your user page may be accessed. You can change them later at any time.
+            li
+                |Display names may only contain Letters or Numbers, as well as hyphens and underscores characters ( - , _ )
+        form(action="/user/me", method="post")
+            div.input-field
+                input(placeholder="DisplayName", name="display_name", type="text", required)
+                button.btn.waves-effect.waves-light.red(type="submit") submit
+                    i.material-icons.right send

@@ -2,6 +2,7 @@ package com.github.sirlag.db
 
 import com.github.sirlag.Dependency
 import com.github.sirlag.DependencyVersion
+import com.github.sirlag.User
 import com.google.gson.Gson
 import com.mongodb.MongoClient
 import com.mongodb.client.MongoDatabase
@@ -12,7 +13,32 @@ import java.util.regex.Pattern
 class MongoWrapper(address: String, database: String, private val gson: Gson): RepositoryDatabase {
     private val db: MongoDatabase = MongoClient(address).getDatabase(database)
 
-    override fun getDependency(identifier:String) : Dependency? {
+    override fun addUser(user:User){
+        val doc = Document()
+            .append("name", user.name)
+            .append("email", user.email)
+        db.getCollection("users").insertOne(doc)
+    }
+
+    override fun getUser(email: String): User? {
+        val user = db.getCollection("users").find(Document("email", email))?.first()?.toJson()
+        return if(user != null) gson.fromJson(user, User::class.java) else null
+    }
+
+    override fun getUserByDisplayName(name: String): User? {
+        val user = db.getCollection("users").find(Document("display_name", name))?.first()?.toJson()
+        return if(user != null) gson.fromJson(user, User::class.java) else null
+    }
+
+    override fun setUserDisplayName(email:String, displayName: String): Boolean{
+        if (db.getCollection("users").find(Document("display_name", displayName)).first() == null){
+            db.getCollection("users").updateOne(Document("email", email), Document("\$set", Document("display_name", displayName)))
+            return true
+        }
+        return false
+    }
+
+    override fun getDependency(identifier:String): Dependency? {
         val dependency = db.getCollection("dependencies").find(Document("identifier", identifier))?.first()?.toJson()
         return if(dependency != null) gson.fromJson(dependency, Dependency::class.java) else null
     }

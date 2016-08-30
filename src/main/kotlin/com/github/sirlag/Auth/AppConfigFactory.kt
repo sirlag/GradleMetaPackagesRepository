@@ -11,7 +11,6 @@ import org.pac4j.sparkjava.DefaultHttpActionAdapter
 
 class AppConfigFactory: ConfigFactory{
     override fun build(): Config {
-        val githubClient = "REDACTED"
 
         val clients = Clients("http://localhost:4567/callback", githubClient)
 

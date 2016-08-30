@@ -1,3 +1,18 @@
 extends Layout
 block content
-    h2
+    div.row
+        div.col.s12.m6
+            div.card.grey.lighten-4
+                div.card-content.center
+                    span.card-title #{user.name}
+                    br
+                    img.circle.responsive-img(src="https://www.gravatar.com/avatar/#{gravatarHash}")
+        if user.hasUploaded
+            div.col.s12.m6
+                div.card.grey.lighten-4
+                    div.card-content
+                        span.card-title Uploaded MetaPackages
+                        ul.collection
+                            for metaPackage in user.metaPackages
+                                li.collection-item
+                                    div #{metaPackage}
