@@ -4,18 +4,12 @@ import com.github.sirlag.Auth.AppConfigFactory
 import com.github.sirlag.db.*
 import com.github.sirlag.Handlers.*
 import com.google.gson.Gson
-import org.pac4j.core.profile.CommonProfile
-import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.ApplicationLogoutRoute
 import org.pac4j.sparkjava.CallbackRoute
 import org.pac4j.sparkjava.SecurityFilter
-import org.pac4j.sparkjava.SparkWebContext
-import spark.Request
-import spark.Response
 import spark.Spark.*
 import spark.template.jade.JadeTemplateEngine
 import spark.debug.DebugScreen.enableDebugScreen
-import java.util.*
 
 val gson = Gson()
 

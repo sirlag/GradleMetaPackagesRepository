@@ -11,6 +11,7 @@ import org.pac4j.sparkjava.DefaultHttpActionAdapter
 
 class AppConfigFactory: ConfigFactory{
     override fun build(): Config {
+        val githubClient = GitHubClient("d5b8eb4572a253ed5203", System.getenv("GMDHGITHUB"))
 
         val clients = Clients("http://localhost:4567/callback", githubClient)
 
